@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Event Registration</title>
+  <style>
+    /* Page background - simple light grey */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f2f5; /* light neutral background */
+      color: #333;
+    }
+
+    /* Container with blue gradient background */
+    .container {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      color: white;
+    }
+
+    h2 {
+      margin-bottom: 24px;
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #e0e0ff; /* lighter text for labels */
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: box-shadow 0.3s ease;
+      outline: none;
+    }
+
+    /* Input background white for readability */
+    input[type="text"],
+    input[type="email"] {
+      background: white;
+      color: #333;
+    }
+
+    /* Focus effect for inputs */
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+    }
+
+    button {
+      background-color: #ffe600; /* bright accent */
+      border: none;
+      color: #333;
+      padding: 14px 0;
+      width: 100%;
+      font-size: 1.1rem;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #d4c300;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-weight: 600;
+      min-height: 24px;
+      font-size: 1rem;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Event Registration Form</h2>
+    <form id="regForm" autocomplete="off">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" required placeholder="Enter your full name" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required placeholder="example@domain.com" />
+
+      <label for="event">Event</label>
+      <input type="text" id="event" name="event" required placeholder="Event name" />
+
+      <button type="submit">Register</button>
+    </form>
+    <p id="message"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('regForm');
+    const messageEl = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const data = {
+        name: form.name.value.trim(),
+        email: form.email.value.trim(),
+        event: form.event.value.trim()
+      };
+
+      messageEl.textContent = '';
+      messageEl.style.color = '';
+
+      try {
+        const response = await fetch('http://localhost:4000/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageEl.style.color = '#d4ff99'; // light greenish for success
+          messageEl.textContent = result.message;
+          form.reset();
+        } else {
+          messageEl.style.color = '#ff9999'; // light red for error
+          messageEl.textContent = result.message || 'Registration failed';
+        }
+      } catch (error) {
+        messageEl.style.color = '#ff9999';
+        messageEl.textContent = 'Error: ' + error.message;
+      }
+    });
+  </script>
+
+</body>
+</html>
